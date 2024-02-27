@@ -19,8 +19,47 @@ body {
     font-weight: 700;
 }
 
+.container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
 .tutorial {
     text-align: center;
     font-size: larger;
     font-weight: 500;
+}
+
+.button {
+    text-align: center;
+    border: 2px solid white;
+    padding: 15px;
+    text-decoration: none;
+    color: white;
+
+    position: relative;
+
+    transition: all 200ms;
+}
+
+.button:hover {
+    color: black;
+}
+
+.button::after {
+  background-color: white;
+  content: "";
+  width: 0;
+  height: 100%;
+  z-index: -1;
+  left: 0;
+  bottom: 0;
+  transition: width 200ms ease 0s;
+  position: absolute;
+}
+
+.button:hover::after {
+    width: 100%;
 }

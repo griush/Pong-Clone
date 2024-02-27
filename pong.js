@@ -207,4 +207,4 @@ function init() {
     window.requestAnimationFrame(gameLoop)
 }
 
-init()
+window.onload = init

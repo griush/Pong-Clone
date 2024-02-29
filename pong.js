@@ -29,7 +29,7 @@ const paddleHalfHeight = 50
 const paddleSpeed = 500
 
 const ballHalfSize = 10
-let ballSpeed = 500
+let ballSpeed = 400
 
 // Game vairiables
 let lastFrameTime = 0.0
@@ -176,10 +176,12 @@ function init() {
         }
 
         if (ev.key === "ArrowUp") {
+            ev.preventDefault()
             upArrowPressed = true
         }
 
         if (ev.key === "ArrowDown") {
+            ev.preventDefault()
             downArrowPressed = true
         }
     })

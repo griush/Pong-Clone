@@ -11,6 +11,7 @@ body {
 
 #main-canvas {
     border: 2px solid white;
+    aspect-ratio: 4/3;
 }
 
 #score {

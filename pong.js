@@ -16,6 +16,8 @@ const ctx = canvas.getContext("2d")
 const scoreText = document.getElementById("score")
 
 // Game constants
+let currently_playing = false
+
 const canvasHalfWidth = canvas.width / 2
 const canvasHalfHeight = canvas.height / 2
 
@@ -62,36 +64,38 @@ function drawMiddleLine() {
 }
 
 function updatePaddles(dt) {
-    // Left
-    if (wPressed) {
-        leftPaddle.pos.y -= paddleSpeed * dt
-    }
-    if (sPressed) {
-        leftPaddle.pos.y += paddleSpeed * dt
-    }
+    if (currently_playing) {
+        // Left
+        if (wPressed) {
+            leftPaddle.pos.y -= paddleSpeed * dt
+        }
+        if (sPressed) {
+            leftPaddle.pos.y += paddleSpeed * dt
+        }
 
-    if (upArrowPressed) {
-        rightPaddle.pos.y -= paddleSpeed * dt
-    }
+        if (upArrowPressed) {
+            rightPaddle.pos.y -= paddleSpeed * dt
+        }
 
-    if (downArrowPressed) {
-        rightPaddle.pos.y += paddleSpeed * dt
-    }
+        if (downArrowPressed) {
+            rightPaddle.pos.y += paddleSpeed * dt
+        }
 
-    if (leftPaddle.pos.y < paddleHalfHeight + paddleBorderPadding) {
-        leftPaddle.pos.y = paddleHalfHeight + paddleBorderPadding
-    }
+        if (leftPaddle.pos.y < paddleHalfHeight + paddleBorderPadding) {
+            leftPaddle.pos.y = paddleHalfHeight + paddleBorderPadding
+        }
 
-    if (leftPaddle.pos.y > canvas.height - paddleHalfHeight - paddleBorderPadding) {
-        leftPaddle.pos.y = canvas.height - paddleHalfHeight - paddleBorderPadding
-    }
+        if (leftPaddle.pos.y > canvas.height - paddleHalfHeight - paddleBorderPadding) {
+            leftPaddle.pos.y = canvas.height - paddleHalfHeight - paddleBorderPadding
+        }
 
-    if (rightPaddle.pos.y < paddleHalfHeight + paddleBorderPadding) {
-        rightPaddle.pos.y = paddleHalfHeight + paddleBorderPadding
-    }
+        if (rightPaddle.pos.y < paddleHalfHeight + paddleBorderPadding) {
+            rightPaddle.pos.y = paddleHalfHeight + paddleBorderPadding
+        }
 
-    if (rightPaddle.pos.y > canvas.height - paddleHalfHeight - paddleBorderPadding) {
-        rightPaddle.pos.y = canvas.height - paddleHalfHeight - paddleBorderPadding
+        if (rightPaddle.pos.y > canvas.height - paddleHalfHeight - paddleBorderPadding) {
+            rightPaddle.pos.y = canvas.height - paddleHalfHeight - paddleBorderPadding
+        }
     }
 }
 
@@ -102,36 +106,38 @@ function drawPaddles() {
 }
 
 function updateBall(dt) {
-    const speed = vec2Scale(ballSpeedVec, ballSpeed)
-    ball.pos = vec2Add(ball.pos, vec2Scale(speed, dt))
+    if (currently_playing) {
+        const speed = vec2Scale(ballSpeedVec, ballSpeed)
+        ball.pos = vec2Add(ball.pos, vec2Scale(speed, dt))
 
-    // Collision top/bottom
-    if (ball.pos.y <= ballHalfSize) {
-        ballSpeedVec.y = -ballSpeedVec.y
-        ball.pos.y += 3
-    } else if (ball.pos.y >= canvas.height - ballHalfSize) {
-        ballSpeedVec.y = -ballSpeedVec.y
-        ball.pos.y -= 3
-    }
+        // Collision top/bottom
+        if (ball.pos.y <= ballHalfSize) {
+            ballSpeedVec.y = -ballSpeedVec.y
+            ball.pos.y += 3
+        } else if (ball.pos.y >= canvas.height - ballHalfSize) {
+            ballSpeedVec.y = -ballSpeedVec.y
+            ball.pos.y -= 3
+        }
 
-    // Paddle collision
-    if (quadInQuad(ball, leftPaddle)) {
-        ballSpeedVec.x = -ballSpeedVec.x
-        ball.pos.x += 3
-        ballSpeed += 5
-    } else if (quadInQuad(ball, rightPaddle)) {
-        ballSpeedVec.x = -ballSpeedVec.x
-        ball.pos.x -= 3
-        ballSpeed += 5
-    }
+        // Paddle collision
+        if (quadInQuad(ball, leftPaddle)) {
+            ballSpeedVec.x = -ballSpeedVec.x
+            ball.pos.x += 3
+            ballSpeed += 5
+        } else if (quadInQuad(ball, rightPaddle)) {
+            ballSpeedVec.x = -ballSpeedVec.x
+            ball.pos.x -= 3
+            ballSpeed += 5
+        }
 
-    // Out of bounds (point scored)
-    if (ball.pos.x < leftPaddle.pos.x + leftPaddle.size.x - 5/*some margin*/) {
-        rightPoints += 1
-        gameRestart()
-    } else if (ball.pos.x > canvas.width - leftPaddle.pos.x - leftPaddle.size.x + 5) {
-        leftPoints += 1
-        gameRestart()
+        // Out of bounds (point scored)
+        if (ball.pos.x < leftPaddle.pos.x + leftPaddle.size.x - 5/*some margin*/) {
+            rightPoints += 1
+            gameRestart()
+        } else if (ball.pos.x > canvas.width - leftPaddle.pos.x - leftPaddle.size.x + 5) {
+            leftPoints += 1
+            gameRestart()
+        }
     }
 }
 
@@ -153,6 +159,7 @@ function gameRestart() {
     ballSpeedVec = vec2Normailze(vec2(randChoose(-1, 1), randFloat(-1, 1)))
     ball.pos = vec2(canvasHalfWidth, canvasHalfHeight)
     ballSpeed = 500
+    currently_playing = false
 }
 
 function gameLoop() {
@@ -170,7 +177,7 @@ function init() {
         if (ev.key === "w") {
             wPressed = true
         }
-        
+
         if (ev.key === "s") {
             sPressed = true
         }
@@ -190,7 +197,7 @@ function init() {
         if (ev.key === "w") {
             wPressed = false
         }
-        
+
         if (ev.key === "s") {
             sPressed = false
         }
@@ -201,6 +208,10 @@ function init() {
 
         if (ev.key === "ArrowDown") {
             downArrowPressed = false
+        }
+
+        if (ev.key === " ") {
+            currently_playing = true
         }
     })
 
